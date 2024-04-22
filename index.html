@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="./style.css" />
     <script src="./rows.js" defer></script>
     <script src="./cards.js" defer></script>
+    <script src="./filesBank.js" defer></script>
   </head>
   <body>
     <h1>Tier maker</h1>
@@ -23,8 +24,8 @@
       <div class="tier-row">
         <div class="label" style="background-color: rgb(255, 127, 127)">S</div>
         <div class="sort">
-          <div class="card" id="first" draggable="true">🙇‍♀️</div>
-          <div class="card" id="second" draggable="true">🫡</div>
+          <!-- <div class="card" id="first" draggable="true">🙇‍♀️</div>
+          <div class="card" id="second" draggable="true">🫡</div> -->
         </div>
         <div class="settings-control">
           <div class="setting">
@@ -363,6 +364,15 @@
           </div>
         </div>
       </div>
+    </div>
+    <div class="files-bank" id="filesBank"></div>
+
+    <p class="text file-upload-container" style="font-size: large">
+      Upload images to add to tiermaker
+    </p>
+    <div class="file-upload-container">
+      <button id="choose-files">Choose files</button>
+      <p id="uploaded-image-filename"></p>
     </div>
   </body>
 </html>
