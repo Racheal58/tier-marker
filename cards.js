@@ -8,6 +8,8 @@ const uploadFileToBank = (e) => {
   const file = createFile();
   const filesBank = document.querySelector(".files-bank");
   filesBank.appendChild(file);
+  // display file bank when adding image
+  filesBank.classList.add("show")
 };
 
 uploadFile.onclick = uploadFileToBank;
