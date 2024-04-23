@@ -5,25 +5,27 @@ const uploadFile = document.querySelector("#choose-files");
 const uploadFileToBank = (e) => {
   console.log("try upload");
 
-  const file = createFile();
+  const card = createCard();
   const filesBank = document.querySelector(".files-bank");
-  filesBank.appendChild(file);
+  filesBank.appendChild(card);
+  // display file bank when adding image
+  filesBank.classList.add("show")
 };
 
 uploadFile.onclick = uploadFileToBank;
 
-const createFile = () => {
+const createCard = () => {
   console.log("try create");
-  const file = document.createElement("div");
-  file.classList.add("card");
-  file.setAttribute("draggable", "true");
-  file.id = Date.now();
-  file.ondragstart = onDragStart;
-  file.ondragend = onDragEnd;
-  file.onclick = deleteCard;
-  appendImage(file);
+  const card = document.createElement("div");
+  card.classList.add("card");
+  card.setAttribute("draggable", "true");
+  card.id = Date.now();
+  card.ondragstart = onDragStart;
+  card.ondragend = onDragEnd;
+  card.onclick = deleteCard;
+  appendImage(card);
 
-  return file;
+  return card;
 };
 
 const appendImage = (card) => {
