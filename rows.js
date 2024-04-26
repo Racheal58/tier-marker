@@ -1,5 +1,5 @@
 const rows = document.querySelectorAll(".tier-row");
-const rowDrop = document.querySelectorAll(".drop-zone");
+const rowConatiner = document.querySelector(".tier-container");
 
 const onDragOver = (e) => {
   e.preventDefault();
@@ -14,43 +14,67 @@ const onDrop = (e) => {
   console.log(`dragged, ${e.dataTransfer.getData("id")}`);
 };
 
-const onDragRowStart = (e) => {
-  console.log('row dragging')
-  const id = e.dataTransfer.setData("id", e.target.id)
-  setTimeout(() => {
-    e.target.style.visibility = "hidden";
-  }, 50);
+let draggedRow = null;
 
-  console.log('row id', id)
+const onRowDragStart = (e) => {
+  draggedRow = e.target
+  e.dataTransfer.setData("text/plain", "");
 }
-
-const onDragRowEnd = (e) => {
-  e.target.style.visibility = "visible";
-};
 
 const onRowDragOver = (e) => {
   e.preventDefault()
-  console.log("over")
+  const afterRow = getDragAfterRow(rowConatiner, e.clientY);
+  // const currentRow = getDraggedRow(e.target)
+
+  if (
+    afterRow === null ||
+    afterRow === draggedRow.nextSibling
+  ) {
+    return;
+  }
+  rowConatiner.insertBefore(draggedRow, afterRow);
 }
 
 const onRowDrop = (e) => {
   e.preventDefault()
-  console.log("row dropped", e.target)
-  const draggedRowId = e.dataTransfer.getData("id")
-  console.log("row dropped", draggedRowId)
-  const draggedRow = document.getElementById(draggedRowId)
-  e.target.appendChild(draggedRow)
 }
 
+const getDragAfterRow = (container, y) => {
+  const draggableElements = [
+    ...container.querySelectorAll(".tier-row"),
+  ];
+
+  return draggableElements.reduce(
+    (closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+
+      if (offset < 0 && offset > closest.offset) {
+        return { offset, element: child };
+      } else {
+        return closest;
+      }
+    },
+    { offset: Number.NEGATIVE_INFINITY,
+    }
+  ).element;
+}
+
+// const getDraggedRow = (row) => {
+//   while (!row.classList.contains("tier-row") && row.parentNode) {
+//     row = row.parentNode;
+//   }
+//   return row;
+// }
+
+rowConatiner.addEventListener("dragstart", onRowDragStart);
+rowConatiner.addEventListener("dragover", onRowDragOver);
+rowConatiner.addEventListener("drop", onRowDrop);
+
 rows.forEach((row) => {
-  row.ondragstart = onDragRowStart
-  row.ondragend = onDragRowEnd
+  // row.ondragstart = onDragRowStart
+  // row.ondragend = onDragRowEnd
 
   row.ondragover = onDragOver;
   row.ondrop = onDrop;
-});
-
-rowDrop.forEach((rowD) => {
-  rowD.ondragover = onRowDragOver;
-  rowD.ondrop = onRowDrop;
 });
