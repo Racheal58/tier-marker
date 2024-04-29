@@ -79,6 +79,11 @@ svg {
   align-items: center;
 }
 
+.direction-buttons button {
+  background: transparent;
+  border: none;
+}
+
 .file-upload-container {
   display: flex;
   justify-content: center;
@@ -118,6 +123,6 @@ svg {
 
 /* show when adding images */
 .show {
-  display: flex; 
+  display: flex;
   flex-wrap: wrap;
 }
