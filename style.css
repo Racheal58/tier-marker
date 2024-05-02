@@ -61,6 +61,7 @@ h1 {
   flex-direction: row;
   align-items: center;
   background-color: #000;
+  cursor: pointer;
 }
 
 .setting {
@@ -82,6 +83,7 @@ svg {
 .direction-buttons button {
   background: transparent;
   border: none;
+  cursor: pointer;
 }
 
 .file-upload-container {
@@ -125,4 +127,55 @@ svg {
 .show {
   display: flex;
   flex-wrap: wrap;
+}
+
+dialog {
+  max-width: 700px;
+  max-height: 600px;
+  width: 100%;
+}
+
+.modal-container {
+  background-color: white;
+  position: relative;
+  /* max-width: 700px;
+  max-height: 600px;
+  width: 100%; */
+  padding: 20px;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.modal-container h4 {
+  text-align: center;
+}
+
+.modal-container textarea {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+.button-container button {
+  background: #efefef;
+  max-width: 300px;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  padding: 10px;
+  font-size: 14px;
+  width: 100%;
+  border: solid 1px #efefef;
+  border-radius: 8px;
 }
