@@ -87,21 +87,21 @@ function moveRowDown(row) {
 const adjustContainerHeight = () => {
   // Calculate the total height of the remaining rows
   let totalHeight = 0;
-  rows.forEach(row => {
+  rows.forEach((row) => {
     totalHeight += row.offsetHeight;
   });
 
   // Set the height of the tier-container element
   rowContainer.style.height = `${totalHeight}px`;
-}
+};
 
 const deleteRow = (row) => {
   const onDeleteRow = window.confirm("Do you want to delete this Row?");
   if (onDeleteRow) {
     row.remove();
-    adjustContainerHeight()
+    adjustContainerHeight();
   }
-}
+};
 
 buttonUp.forEach((button) => {
   button.addEventListener("click", () => {
@@ -136,11 +136,29 @@ rowContainer.addEventListener("click", (e) => {
   }
 });
 
+const clearAllImages = (images) => {
+  const onDeleteRow = window.confirm("Do you want to delete images in this Row?");
+  if (onDeleteRow) {
+    images.forEach((image) => {
+      image.remove();
+    });
+  }
+};
+
+rowContainer.addEventListener("click", (e) => {
+  const clearButton = e.target.closest(".clear-button")
+  if (clearButton) {
+    const row = clearButton.closest(".tier-row");
+    const cards = row.querySelectorAll(".card");
+    clearAllImages(cards);
+  }
+})
+
 rows.forEach((row) => {
   row.ondragover = onDragOver;
   row.ondrop = onDrop;
 
-  //TODO: style the modal:check, include fields needed (deleting rows:check, creating rows, clearing all images, add rows above or below), update label text and color
+  //TODO: style the modal:check, include fields needed (deleting rows:check, creating rows, clearing all images:check, add rows above or below), update label text and color
   const dialog = document.createElement("dialog");
   const showButton = row.querySelector("#settings-gear");
   const label = row.querySelector(".label");
@@ -169,7 +187,7 @@ rows.forEach((row) => {
   <textarea>${label.textContent}</textarea>
   <span class="button-container">
     <button class="delete-button">Delete Row</button>
-    <button>Clear Row Images</button>
+    <button class="clear-button">Clear Row Images</button>
   </span>
   <span class="button-container">
     <button>Add a Row Above</button>
