@@ -84,10 +84,22 @@ function moveRowDown(row) {
   rowContainer.insertBefore(currentRow, nextRow.nextElementSibling);
 }
 
+const adjustContainerHeight = () => {
+  // Calculate the total height of the remaining rows
+  let totalHeight = 0;
+  rows.forEach(row => {
+    totalHeight += row.offsetHeight;
+  });
+
+  // Set the height of the tier-container element
+  rowContainer.style.height = `${totalHeight}px`;
+}
+
 const deleteRow = (row) => {
   const onDeleteRow = window.confirm("Do you want to delete this Row?");
   if (onDeleteRow) {
     row.remove();
+    adjustContainerHeight()
   }
 }
 
@@ -103,14 +115,6 @@ buttonDown.forEach((button) => {
     const parentListItem = button.parentNode.parentNode;
     moveRowDown(parentListItem);
   });
-});
-
-rowContainer.addEventListener("click", (e) => {
-  const target = e.target;
-  if (target.classList.contains("delete-button")) {
-    const row = target.closest(".tier-row");
-    deleteRow(row);
-  }
 });
 
 const eventListeners = [
@@ -136,7 +140,7 @@ rows.forEach((row) => {
   row.ondragover = onDragOver;
   row.ondrop = onDrop;
 
-  //TODO: style the modal:check, include fields needed (deleting rows, creating rows, clearing all images, add rows above or below), update label text and color
+  //TODO: style the modal:check, include fields needed (deleting rows:check, creating rows, clearing all images, add rows above or below), update label text and color
   const dialog = document.createElement("dialog");
   const showButton = row.querySelector("#settings-gear");
   const label = row.querySelector(".label");
