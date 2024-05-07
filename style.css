@@ -45,6 +45,7 @@ h1 {
 
 .sort {
   flex: 1;
+  display: flex;
 }
 
 .card {
