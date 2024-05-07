@@ -87,7 +87,7 @@ function moveRowDown(row) {
 const adjustContainerHeight = () => {
   // Calculate the total height of the remaining rows
   let totalHeight = 0;
-  rows.forEach((row) => {
+  document.querySelectorAll('.tier-row').forEach(row => {
     totalHeight += row.offsetHeight;
   });
 
@@ -154,15 +154,95 @@ rowContainer.addEventListener("click", (e) => {
   }
 })
 
+const addRow = () => {
+  const tierRow = document.createElement("div");
+  tierRow.classList.add("tier-row");
+  tierRow.innerHTML = `
+    <div class="label custom-style">NEW</div>
+    <div class="sort custom-style"></div>
+    <div class="settings-control custom-style">
+      <div class="setting custom-style">
+        <svg
+          id="settings-gear"
+          class="icon icon-tabler icon-tabler-settings-filled custom-style"
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="#ffffff"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path
+            d="M14.647 4.081a.724 .724 0 0 0 1.08 .448c2.439 -1.485 5.23 1.305 3.745 3.744a.724 .724 0 0 0 .447 1.08c2.775 .673 2.775 4.62 0 5.294a.724 .724 0 0 0 -.448 1.08c1.485 2.439 -1.305 5.23 -3.744 3.745a.724 .724 0 0 0 -1.08 .447c-.673 2.775 -4.62 2.775 -5.294 0a.724 .724 0 0 0 -1.08 -.448c-2.439 1.485 -5.23 -1.305 -3.745 -3.744a.724 .724 0 0 0 -.447 -1.08c-2.775 -.673 -2.775 -4.62 0 -5.294a.724 .724 0 0 0 .448 -1.08c-1.485 -2.439 1.305 -5.23 3.744 -3.745a.722 .722 0 0 0 1.08 -.447c.673 -2.775 4.62 -2.775 5.294 0zm-2.647 4.919a3 3 0 1 0 0 6a3 3 0 0 0 0 -6z"
+            stroke-width="0"
+            fill="currentColor"
+          />
+        </svg>
+      </div>
+      <div class="setting direction-buttons custom-style">
+        <button id="direction-button-up" class="custom-style">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="icon icon-tabler icon-tabler-arrow-badge-up-filled custom-style"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="#000000"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path
+              d="M11.375 6.22l-5 4a1 1 0 0 0 -.375 .78v6l.006 .112a1 1 0 0 0 1.619 .669l4.375 -3.501l4.375 3.5a1 1 0 0 0 1.625 -.78v-6a1 1 0 0 0 -.375 -.78l-5 -4a1 1 0 0 0 -1.25 0z"
+              stroke-width="0"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+  
+        <button id="direction-button-down" class="custom-style">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="icon icon-tabler icon-tabler-arrow-badge-down-filled custom-style"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="#000000"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path
+              d="M16.375 6.22l-4.375 3.498l-4.375 -3.5a1 1 0 0 0 -1.625 .782v6a1 1 0 0 0 .375 .78l5 4a1 1 0 0 0 1.25 0l5 -4a1 1 0 0 0 .375 -.78v-6a1 1 0 0 0 -1.625 -.78z"
+              stroke-width="0"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  `;
+  rowContainer.appendChild(tierRow);
+  adjustContainerHeight()
+}
+
 rows.forEach((row) => {
   row.ondragover = onDragOver;
   row.ondrop = onDrop;
 
-  //TODO: style the modal:check, include fields needed (deleting rows:check, creating rows, clearing all images:check, add rows above or below), update label text and color
+  //TODO: style the modal:check, include fields needed (deleting rows:check, creating rows, clearing all images:check, adding rows:check:;add rows above or below), update label text and color
   const dialog = document.createElement("dialog");
   const showButton = row.querySelector("#settings-gear");
   const label = row.querySelector(".label");
-  
+
   dialog.innerHTML = `
   <div class="modal-container">
   <span class="close-button">
@@ -190,7 +270,7 @@ rows.forEach((row) => {
     <button class="clear-button">Clear Row Images</button>
   </span>
   <span class="button-container">
-    <button>Add a Row Above</button>
+    <button onclick="addRow()">Add a Row Above</button>
     <button>Add a Row Below</button>
   </span>
 </div>
