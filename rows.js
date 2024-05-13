@@ -161,17 +161,17 @@ rowContainer.addEventListener("click", (e) => {
   }
 })
 
-const addRow = () => {
+const addRow = (position, referenceRow) => {
   const tierRow = document.createElement("div");
   tierRow.classList.add("tier-row");
   tierRow.innerHTML = `
-    <div class="label custom-style">NEW</div>
-    <div class="sort custom-style"></div>
-    <div class="settings-control custom-style">
-      <div class="setting custom-style">
+    <div class="label">NEW</div>
+    <div class="sort"></div>
+    <div class="settings-control">
+      <div class="setting">
         <svg
           id="settings-gear"
-          class="icon icon-tabler icon-tabler-settings-filled custom-style"
+          class="icon icon-tabler icon-tabler-settings-filled"
           xmlns="http://www.w3.org/2000/svg"
           width="32"
           height="32"
@@ -190,11 +190,11 @@ const addRow = () => {
           />
         </svg>
       </div>
-      <div class="setting direction-buttons custom-style">
-        <button id="direction-button-up" class="custom-style">
+      <div class="setting direction-buttons">
+        <button id="direction-button-up">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="icon icon-tabler icon-tabler-arrow-badge-up-filled custom-style"
+            class="icon icon-tabler icon-tabler-arrow-badge-up-filled"
             width="32"
             height="32"
             viewBox="0 0 24 24"
@@ -213,10 +213,10 @@ const addRow = () => {
           </svg>
         </button>
   
-        <button id="direction-button-down" class="custom-style">
+        <button id="direction-button-down">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="icon icon-tabler icon-tabler-arrow-badge-down-filled custom-style"
+            class="icon icon-tabler icon-tabler-arrow-badge-down-filled"
             width="32"
             height="32"
             viewBox="0 0 24 24"
@@ -238,14 +238,84 @@ const addRow = () => {
     </div>
   `;
   rowContainer.appendChild(tierRow);
+
+  if (position === 'above') {
+    rowContainer.insertBefore(tierRow, referenceRow);
+  } else if (position === 'below') {
+    rowContainer.insertBefore(tierRow, referenceRow.nextSibling);
+  }
+
   adjustContainerHeight()
+
+  const dialog = document.createElement("dialog");
+  const showButton = tierRow.querySelector("#settings-gear");
+  const label = tierRow.querySelector(".label");
+
+  dialog.innerHTML = `
+  <div class="modal-container">
+  <span class="close-button">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="icon icon-tabler icon-tabler-x"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      stroke-width="1.5"
+      stroke="#000000"
+      fill="none"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M18 6l-12 12" />
+      <path d="M6 6l12 12" />
+    </svg>
+  </span>
+  <h4>Edit Label Text Below:</h4>
+  <textarea>${label.textContent}</textarea>
+  <span class="button-container">
+    <button class="delete-button">Delete Row</button>
+    <button class="clear-button">Clear Row Images</button>
+  </span>
+  <span class="button-container">
+    <button id="add-button-above">Add a Row Above</button>
+    <button id="add-button-below">Add a Row Below</button>
+  </span>
+</div>
+  `;
+
+  // Add the dialog to the tier row
+  tierRow.appendChild(dialog);
+
+  const closeButton = dialog.querySelector(".close-button");
+
+  showButton.addEventListener("click", () => {
+    dialog.showModal();
+  });
+
+  closeButton.addEventListener("click", () => {
+    dialog.close();
+  });
 }
+
+document.addEventListener("click", (e) => {
+  const addButtonAbove = e.target.closest("#add-button-above");
+  const addButtonBelow = e.target.closest("#add-button-below");
+  
+  if (addButtonAbove) {
+    const row = e.target.closest(".tier-row");
+    addRow('above', row);
+  } else if (addButtonBelow) {
+    const row = e.target.closest(".tier-row");
+    addRow('below', row);
+  }
+});
 
 rows.forEach((row) => {
   row.ondragover = onDragOver;
   row.ondrop = onDrop;
 
-  //TODO: style the modal:check, include fields needed (deleting rows:check, creating rows, clearing all images:check, adding rows:check:;add rows above or below), update label text and color
+  //TODO: style the modal:check, include fields needed (deleting rows:check, creating rows, clearing all images:check, disable clear image button when row is empty:check, adding rows:check:;add rows above or below), update label text and color
   const dialog = document.createElement("dialog");
   const showButton = row.querySelector("#settings-gear");
   const label = row.querySelector(".label");
@@ -277,8 +347,8 @@ rows.forEach((row) => {
     <button class="clear-button">Clear Row Images</button>
   </span>
   <span class="button-container">
-    <button onclick="addRow()">Add a Row Above</button>
-    <button>Add a Row Below</button>
+    <button id="add-button-above">Add a Row Above</button>
+    <button id="add-button-below">Add a Row Below</button>
   </span>
 </div>
   `;
