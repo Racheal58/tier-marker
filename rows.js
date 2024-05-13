@@ -136,12 +136,17 @@ rowContainer.addEventListener("click", (e) => {
   }
 });
 
-const clearAllImages = (images) => {
+const clearAllImages = (images, clearButton) => {
   const onDeleteRow = window.confirm("Do you want to delete images in this Row?");
   if (onDeleteRow) {
     images.forEach((image) => {
       image.remove();
     });
+    if (images.length === 0) {
+      clearButton.setAttribute("disabled", true);
+    } else {
+      clearButton.removeAttribute("disabled");
+    }
   }
 };
 
@@ -150,7 +155,9 @@ rowContainer.addEventListener("click", (e) => {
   if (clearButton) {
     const row = clearButton.closest(".tier-row");
     const cards = row.querySelectorAll(".card");
-    clearAllImages(cards);
+    if (cards.length > 0) {
+      clearAllImages(cards, clearButton);
+    } 
   }
 })
 
