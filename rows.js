@@ -69,25 +69,23 @@ const getDragAfterRow = (container, y) => {
 
 // Move rows (tier-row) up or down with the arrows
 function moveRowUp(row) {
-  const currentRow = row.parentNode;
-  const prevRow = currentRow.previousElementSibling;
+  const prevRow = row.previousElementSibling;
   if (!prevRow) return; // If there's no previous item, exit
 
-  rowContainer.insertBefore(currentRow, prevRow);
+  row.parentNode.insertBefore(row, prevRow);
 }
 
 function moveRowDown(row) {
-  const currentRow = row.parentNode;
-  const nextRow = currentRow.nextElementSibling;
+  const nextRow = row.nextElementSibling;
   if (!nextRow) return; // If there's no next item, exit
 
-  rowContainer.insertBefore(currentRow, nextRow.nextElementSibling);
+  row.parentNode.insertBefore(nextRow, row);
 }
 
 const adjustContainerHeight = () => {
   // Calculate the total height of the remaining rows
   let totalHeight = 0;
-  document.querySelectorAll('.tier-row').forEach(row => {
+  document.querySelectorAll(".tier-row").forEach((row) => {
     totalHeight += row.offsetHeight;
   });
 
@@ -103,17 +101,18 @@ const deleteRow = (row) => {
   }
 };
 
-buttonUp.forEach((button) => {
-  button.addEventListener("click", () => {
-    const parentListItem = button.parentNode.parentNode;
-    moveRowUp(parentListItem);
-  });
-});
+// Select all arrow buttons
+const allArrowButtons = document.querySelectorAll('.tier-row .direction-buttons button');
 
-buttonDown.forEach((button) => {
+// Attach event listeners to all arrow buttons
+allArrowButtons.forEach(button => {
   button.addEventListener("click", () => {
-    const parentListItem = button.parentNode.parentNode;
-    moveRowDown(parentListItem);
+    const parentRow = button.closest('.tier-row');
+    if (button.id === 'direction-button-up') {
+      moveRowUp(parentRow);
+    } else if (button.id === 'direction-button-down') {
+      moveRowDown(parentRow);
+    }
   });
 });
 
@@ -137,7 +136,9 @@ rowContainer.addEventListener("click", (e) => {
 });
 
 const clearAllImages = (images, clearButton) => {
-  const onDeleteRow = window.confirm("Do you want to delete images in this Row?");
+  const onDeleteRow = window.confirm(
+    "Do you want to delete images in this Row?"
+  );
   if (onDeleteRow) {
     images.forEach((image) => {
       image.remove();
@@ -151,15 +152,15 @@ const clearAllImages = (images, clearButton) => {
 };
 
 rowContainer.addEventListener("click", (e) => {
-  const clearButton = e.target.closest(".clear-button")
+  const clearButton = e.target.closest(".clear-button");
   if (clearButton) {
     const row = clearButton.closest(".tier-row");
     const cards = row.querySelectorAll(".card");
     if (cards.length > 0) {
       clearAllImages(cards, clearButton);
-    } 
+    }
   }
-})
+});
 
 const addRow = (position, referenceRow) => {
   const tierRow = document.createElement("div");
@@ -239,13 +240,25 @@ const addRow = (position, referenceRow) => {
   `;
   rowContainer.appendChild(tierRow);
 
+  // Add event listeners for newly created rows arrow buttons
+  const buttonUp = tierRow.querySelector("#direction-button-up");
+  const buttonDown = tierRow.querySelector("#direction-button-down");
+
+  buttonUp.addEventListener("click", () => {
+    moveRowUp(tierRow);
+  });
+
+  buttonDown.addEventListener("click", () => {
+    moveRowDown(tierRow);
+  });
+
   if (position === 'above') {
-    rowContainer.insertBefore(tierRow, referenceRow);
+    referenceRow.insertAdjacentElement('beforebegin', tierRow);
   } else if (position === 'below') {
-    rowContainer.insertBefore(tierRow, referenceRow.nextSibling);
+    referenceRow.insertAdjacentElement('afterend', tierRow);
   }
 
-  adjustContainerHeight()
+  adjustContainerHeight();
 
   const dialog = document.createElement("dialog");
   const showButton = tierRow.querySelector("#settings-gear");
@@ -296,18 +309,18 @@ const addRow = (position, referenceRow) => {
   closeButton.addEventListener("click", () => {
     dialog.close();
   });
-}
+};
 
 document.addEventListener("click", (e) => {
   const addButtonAbove = e.target.closest("#add-button-above");
   const addButtonBelow = e.target.closest("#add-button-below");
-  
+
   if (addButtonAbove) {
     const row = e.target.closest(".tier-row");
-    addRow('above', row);
+    addRow("above", row);
   } else if (addButtonBelow) {
     const row = e.target.closest(".tier-row");
-    addRow('below', row);
+    addRow("below", row);
   }
 });
 
@@ -315,7 +328,7 @@ rows.forEach((row) => {
   row.ondragover = onDragOver;
   row.ondrop = onDrop;
 
-  //TODO: style the modal:check, include fields needed (deleting rows:check, creating rows, clearing all images:check, disable clear image button when row is empty:check, adding rows:check:;add rows above or below), update label text and color
+  //TODO: style the modal:check, include fields needed (deleting rows:check, creating rows, clearing all images:check, disable clear image button when row is empty:check, adding rows:check:;add rows above or below:check), update label text and color
   const dialog = document.createElement("dialog");
   const showButton = row.querySelector("#settings-gear");
   const label = row.querySelector(".label");
