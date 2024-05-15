@@ -131,7 +131,7 @@ svg {
 }
 
 dialog {
-  max-width: 700px;
+  max-width: 768px;
   max-height: 600px;
   width: 100%;
 }
@@ -150,6 +150,11 @@ dialog {
   top: 10px;
   right: 10px;
   cursor: pointer;
+}
+
+.modal-container h3 {
+  text-align: center;
+  margin-top: 0;
 }
 
 .modal-container h4 {
@@ -179,4 +184,21 @@ dialog {
   width: 100%;
   border: solid 1px #efefef;
   border-radius: 8px;
+}
+
+.color-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 12px;
+}
+
+.color-picker {
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  border: none;
+  background: none;
+  outline: none;
+  cursor: pointer;
 }
