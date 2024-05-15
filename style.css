@@ -202,3 +202,7 @@ dialog {
   outline: none;
   cursor: pointer;
 }
+
+.selected-color {
+  outline: 2px solid black;
+}

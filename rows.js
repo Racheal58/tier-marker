@@ -168,7 +168,7 @@ const addRow = (position, referenceRow) => {
   const tierRow = document.createElement("div");
   tierRow.classList.add("tier-row");
   tierRow.innerHTML = `
-    <div class="label">NEW</div>
+    <div class="label" contenteditable="true">NEW</div>
     <div class="sort"></div>
     <div class="settings-control">
       <div class="setting">
@@ -348,6 +348,11 @@ const addRow = (position, referenceRow) => {
 
   colorSpans.forEach((span) => {
     span.addEventListener("click", () => {
+      // Remove the selected-color class from all spans
+      colorSpans.forEach((s) => s.classList.remove("selected-color"));
+      // Add the selected-color class to the clicked span
+      span.classList.add("selected-color");
+
       const color = span.style.backgroundColor;
       label.style.backgroundColor = color;
     });
@@ -458,6 +463,11 @@ rows.forEach((row) => {
 
   colorSpans.forEach((span) => {
     span.addEventListener("click", () => {
+      // Remove the selected-color class from all spans
+      colorSpans.forEach((s) => s.classList.remove("selected-color"));
+      // Add the selected-color class to the clicked span
+      span.classList.add("selected-color");
+
       const color = span.style.backgroundColor;
       label.style.backgroundColor = color;
     });
