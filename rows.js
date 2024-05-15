@@ -102,15 +102,17 @@ const deleteRow = (row) => {
 };
 
 // Select all arrow buttons
-const allArrowButtons = document.querySelectorAll('.tier-row .direction-buttons button');
+const allArrowButtons = document.querySelectorAll(
+  ".tier-row .direction-buttons button"
+);
 
 // Attach event listeners to all arrow buttons
-allArrowButtons.forEach(button => {
+allArrowButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    const parentRow = button.closest('.tier-row');
-    if (button.id === 'direction-button-up') {
+    const parentRow = button.closest(".tier-row");
+    if (button.id === "direction-button-up") {
       moveRowUp(parentRow);
-    } else if (button.id === 'direction-button-down') {
+    } else if (button.id === "direction-button-down") {
       moveRowDown(parentRow);
     }
   });
@@ -252,10 +254,10 @@ const addRow = (position, referenceRow) => {
     moveRowDown(tierRow);
   });
 
-  if (position === 'above') {
-    referenceRow.insertAdjacentElement('beforebegin', tierRow);
-  } else if (position === 'below') {
-    referenceRow.insertAdjacentElement('afterend', tierRow);
+  if (position === "above") {
+    referenceRow.insertAdjacentElement("beforebegin", tierRow);
+  } else if (position === "below") {
+    referenceRow.insertAdjacentElement("afterend", tierRow);
   }
 
   adjustContainerHeight();
@@ -285,7 +287,7 @@ const addRow = (position, referenceRow) => {
     </svg>
   </span>
   <h4>Edit Label Text Below:</h4>
-  <textarea>${label.textContent}</textarea>
+  <textarea class="label-input">${label.textContent}</textarea>
   <span class="button-container">
     <button class="delete-button">Delete Row</button>
     <button class="clear-button">Clear Row Images</button>
@@ -328,7 +330,7 @@ rows.forEach((row) => {
   row.ondragover = onDragOver;
   row.ondrop = onDrop;
 
-  //TODO: style the modal:check, include fields needed (deleting rows:check, creating rows, clearing all images:check, disable clear image button when row is empty:check, adding rows:check:;add rows above or below:check), update label text and color
+  //TODO: style the modal:check, include fields needed (deleting rows:check, creating rows, clearing all images:check, disable clear image button when row is empty:check, adding rows:check:;add rows above or below:check), update label text:check and color
   const dialog = document.createElement("dialog");
   const showButton = row.querySelector("#settings-gear");
   const label = row.querySelector(".label");
@@ -354,7 +356,7 @@ rows.forEach((row) => {
     </svg>
   </span>
   <h4>Edit Label Text Below:</h4>
-  <textarea>${label.textContent}</textarea>
+  <textarea class="label-input">${label.textContent}</textarea>
   <span class="button-container">
     <button class="delete-button">Delete Row</button>
     <button class="clear-button">Clear Row Images</button>
@@ -377,5 +379,18 @@ rows.forEach((row) => {
 
   closeButton.addEventListener("click", () => {
     dialog.close();
+  });
+
+  // Add event listener to label & textarea when content changes
+  const textArea = dialog.querySelector(".label-input");
+
+  label.addEventListener("input", () => {
+    // Update the value of the textarea with the content of the label div
+    textArea.value = label.textContent;
+  });
+
+  textArea.addEventListener("input", () => {
+    // Update the content of the label div with the value of the textarea
+    label.textContent = textArea.value;
   });
 });
