@@ -11,8 +11,15 @@ const onDrop = (e) => {
   e.preventDefault();
   const draggedCardId = e.dataTransfer.getData("id");
   const draggedCard = document.getElementById(draggedCardId);
-  e.target.appendChild(draggedCard);
 
+  const cardData = {
+    imageSrc: draggedCard.querySelector("img").src,
+    row: e.target.previousElementSibling.innerText
+  }
+
+  window.localStorage.setItem(draggedCard.id, JSON.stringify(cardData))
+  
+  e.target.appendChild(draggedCard);
   console.log(`dragged, ${e.dataTransfer.getData("id")}`);
 };
 
@@ -67,6 +74,7 @@ const getDragAfterRow = (container, y) => {
 //   return row;
 // }
 
+//TODO: change to arrow functions
 // Move rows (tier-row) up or down with the arrows
 function moveRowUp(row) {
   const prevRow = row.previousElementSibling;

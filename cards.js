@@ -9,21 +9,28 @@ const uploadFileToBank = (e) => {
   const filesBank = document.querySelector(".files-bank");
   filesBank.appendChild(card);
   // display file bank when adding image
-  filesBank.classList.add("show")
+  filesBank.classList.add("show");
 };
 
 uploadFile.onclick = uploadFileToBank;
 
-const createCard = () => {
+const createCard = (id, cardData) => {
   console.log("try create");
   const card = document.createElement("div");
   card.classList.add("card");
   card.setAttribute("draggable", "true");
-  card.id = Date.now();
+  card.id = id || Date.now();
   card.ondragstart = onDragStart;
   card.ondragend = onDragEnd;
   card.onclick = deleteCard;
-  appendImage(card);
+  if (cardData && cardData.imageSrc) {
+    const image = new Image(82, 82);
+    image.src = cardData.imageSrc;
+    image.style.pointerEvents = "none";
+    card.appendChild(image);
+  } else {
+    appendImage(card);
+  }
 
   return card;
 };
@@ -45,6 +52,13 @@ const appendImage = (card) => {
       image.src = e.target.result;
       image.style.pointerEvents = "none";
       card.appendChild(image);
+
+      // Save Data to Local Storage
+      const cardData = {
+        imageSrc: image.src,
+        row: card.parentNode.querySelector(".label")?.innerText,
+      };
+      window.localStorage.setItem(card.id, JSON.stringify(cardData));
     };
     reader.readAsDataURL(firstImage);
   };
@@ -56,6 +70,7 @@ const deleteCard = (e) => {
   const onDeleteCard = window.confirm("Do you want to delete this file?");
   if (onDeleteCard) {
     e.target.remove();
+    window.localStorage.removeItem(e.target.id);
   }
 };
 
@@ -76,3 +91,27 @@ cards.forEach((card) => {
   card.ondragstart = onDragStart;
   card.ondragend = onDragEnd;
 });
+
+// Logic when window first loads
+window.onload = () => {
+  const cardBank = document.querySelector(".files-bank");
+  const keys = Object.keys(window.localStorage);
+
+  keys.forEach((key) => {
+    const cardData = JSON.parse(window.localStorage.getItem(key));
+    const loadedCard = createCard(key, cardData);
+    const rows = document.querySelectorAll(".tier-row");
+    const correctRow = Array.from(rows).find((row) => {
+      return row.querySelector(".label").innerText === cardData.row;
+    });
+
+    if (correctRow) {
+      correctRow.appendChild(loadedCard);
+    } else {
+      cardBank.appendChild(loadedCard);
+    }
+  });
+
+  // display file bank when adding image
+  cardBank.classList.add("show");
+};
