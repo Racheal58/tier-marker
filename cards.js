@@ -114,4 +114,16 @@ window.onload = () => {
 
   // display file bank when adding image
   cardBank.classList.add("show");
+
+  const rowData = JSON.parse(window.localStorage.getItem("rows"));
+  //TODO: figure out why dialog still shows on the page after reloading
+  const openDialog = document.querySelector("dialog");
+
+  console.log("di", openDialog);
+  if (openDialog && rowData) {
+    openDialog.removeAttribute("open");
+    const container = document.getElementById("tier-container");
+    container.innerHTML = rowData.map((data) => data.html).join("");
+  }
+
 };

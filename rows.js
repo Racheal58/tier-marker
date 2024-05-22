@@ -14,11 +14,11 @@ const onDrop = (e) => {
 
   const cardData = {
     imageSrc: draggedCard.querySelector("img").src,
-    row: e.target.previousElementSibling.innerText
-  }
+    row: e.target.previousElementSibling.innerText,
+  };
 
-  window.localStorage.setItem(draggedCard.id, JSON.stringify(cardData))
-  
+  window.localStorage.setItem(draggedCard.id, JSON.stringify(cardData));
+
   e.target.appendChild(draggedCard);
   console.log(`dragged, ${e.dataTransfer.getData("id")}`);
 };
@@ -367,6 +367,21 @@ const addRow = (position, referenceRow) => {
   });
 };
 
+// Function to save row data to localStorage
+const saveRows = () => {
+  const rows = document.querySelectorAll(".tier-row");
+  const rowData = [];
+  rows.forEach((row, index) => {
+    rowData.push({
+      html: row.outerHTML,
+      position: index,
+    });
+  });
+
+  console.log(rows, rowData);
+  window.localStorage.setItem("rows", JSON.stringify(rowData));
+};
+
 document.addEventListener("click", (e) => {
   const addButtonAbove = e.target.closest("#add-button-above");
   const addButtonBelow = e.target.closest("#add-button-below");
@@ -374,9 +389,11 @@ document.addEventListener("click", (e) => {
   if (addButtonAbove) {
     const row = e.target.closest(".tier-row");
     addRow("above", row);
+    saveRows(); // Save rows after adding a new row
   } else if (addButtonBelow) {
     const row = e.target.closest(".tier-row");
     addRow("below", row);
+    saveRows(); // Save rows after adding a new row
   }
 });
 
