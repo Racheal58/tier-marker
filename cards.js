@@ -65,6 +65,7 @@ const appendImage = (card) => {
   input.click();
 };
 
+//TODO: check the issue with deleting cards
 const deleteCard = (e) => {
   console.log("delete");
   const onDeleteCard = window.confirm("Do you want to delete this file?");
@@ -91,39 +92,3 @@ cards.forEach((card) => {
   card.ondragstart = onDragStart;
   card.ondragend = onDragEnd;
 });
-
-// Logic when window first loads
-window.onload = () => {
-  const cardBank = document.querySelector(".files-bank");
-  const keys = Object.keys(window.localStorage);
-
-  keys.forEach((key) => {
-    const cardData = JSON.parse(window.localStorage.getItem(key));
-    const loadedCard = createCard(key, cardData);
-    const rows = document.querySelectorAll(".tier-row");
-    const correctRow = Array.from(rows).find((row) => {
-      return row.querySelector(".label").innerText === cardData.row;
-    });
-
-    if (correctRow) {
-      correctRow.appendChild(loadedCard);
-    } else {
-      cardBank.appendChild(loadedCard);
-    }
-  });
-
-  // display file bank when adding image
-  cardBank.classList.add("show");
-
-  const rowData = JSON.parse(window.localStorage.getItem("rows"));
-  //TODO: figure out why dialog still shows on the page after reloading
-  const openDialog = document.querySelector("dialog");
-
-  console.log("di", openDialog);
-  if (openDialog && rowData) {
-    openDialog.removeAttribute("open");
-    const container = document.getElementById("tier-container");
-    container.innerHTML = rowData.map((data) => data.html).join("");
-  }
-
-};

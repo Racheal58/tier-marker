@@ -23,6 +23,14 @@ const onDrop = (e) => {
   console.log(`dragged, ${e.dataTransfer.getData("id")}`);
 };
 
+// Attach event listener for drop event on the parent container
+rowContainer.addEventListener("drop", onDrop);
+
+// Attach event listener for dragover event on the parent container
+rowContainer.addEventListener("dragover", (e) => {
+  e.preventDefault();
+});
+
 //TODO: figure out row drag and drop
 let draggedRow = null;
 
@@ -81,6 +89,7 @@ function moveRowUp(row) {
   if (!prevRow) return; // If there's no previous item, exit
 
   row.parentNode.insertBefore(row, prevRow);
+  saveRows(); // Save updated rows to local storage
 }
 
 function moveRowDown(row) {
@@ -88,6 +97,7 @@ function moveRowDown(row) {
   if (!nextRow) return; // If there's no next item, exit
 
   row.parentNode.insertBefore(nextRow, row);
+  saveRows(); // Save updated rows to local storage
 }
 
 const adjustContainerHeight = () => {
@@ -102,9 +112,13 @@ const adjustContainerHeight = () => {
 };
 
 const deleteRow = (row) => {
+  const rowId = row.dataset.id; // Assuming the unique ID is stored in the dataset
+
   const onDeleteRow = window.confirm("Do you want to delete this Row?");
   if (onDeleteRow) {
     row.remove();
+    window.localStorage.removeItem(rowId);
+    saveRows(); // Save updated rows to local storage
     adjustContainerHeight();
   }
 };
@@ -171,6 +185,106 @@ rowContainer.addEventListener("click", (e) => {
     }
   }
 });
+
+const createDialog = (row) => {
+  const dialog = document.createElement("dialog");
+  const showButton = row.querySelector("#settings-gear");
+  const label = row.querySelector(".label");
+
+  dialog.innerHTML = `
+    <div class="modal-container">
+      <span class="close-button">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="icon icon-tabler icon-tabler-x"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="#000000"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path d="M18 6l-12 12" />
+          <path d="M6 6l12 12" />
+        </svg>
+      </span>
+      <h3>Choose a Label Background Color:</h3>
+      <div class="color-container">
+        <span style="background-color: #FF7F7F;" class="color-picker"></span>
+        <span style="background-color: #FFBF7F;" class="color-picker"></span>
+        <span style="background-color: #FFDF7F;" class="color-picker"></span>
+        <span style="background-color: #FFFF7F;" class="color-picker"></span>
+        <span style="background-color: #BFFF7F;" class="color-picker"></span>
+        <span style="background-color: #7FFF7F;" class="color-picker"></span>
+        <span style="background-color: #7FFFFF;" class="color-picker"></span>
+        <span style="background-color: #7FBFFF;" class="color-picker"></span>
+        <span style="background-color: #7F7FFF;" class="color-picker"></span>
+        <span style="background-color: #FF7FFF;" class="color-picker"></span>
+        <span style="background-color: #BF7FBF;" class="color-picker"></span>
+        <span style="background-color: #3B3B3B;" class="color-picker"></span>
+        <span style="background-color: #858585;" class="color-picker"></span>
+        <span style="background-color: #CFCFCF;" class="color-picker"></span>
+        <span style="background-color: #F7F7F7;" class="color-picker"></span>
+      </div>
+      <h4>Edit Label Text Below:</h4>
+      <textarea class="label-input">${label.textContent}</textarea>
+      <span class="button-container">
+        <button class="delete-button">Delete Row</button>
+        <button class="clear-button">Clear Row Images</button>
+      </span>
+      <span class="button-container">
+        <button id="add-button-above">Add a Row Above</button>
+        <button id="add-button-below">Add a Row Below</button>
+      </span>
+    </div>
+  `;
+
+  // Add the dialog to the tier row
+  row.appendChild(dialog);
+
+  const closeButton = dialog.querySelector(".close-button");
+
+  showButton.addEventListener("click", () => {
+    // dialog.showModal();
+    dialog.setAttribute("open", true);
+  });
+
+  closeButton.addEventListener("click", () => {
+    // dialog.close();
+    dialog.removeAttribute("open");
+  });
+
+  // Add event listener to label & textarea when content changes
+  const textArea = dialog.querySelector(".label-input");
+
+  label.addEventListener("input", () => {
+    // Update the value of the textarea with the content of the label div
+    textArea.value = label.textContent;
+  });
+
+  textArea.addEventListener("input", () => {
+    // Update the content of the label div with the value of the textarea
+    label.textContent = textArea.value;
+  });
+
+  // Color picker for tier labels
+  const colorSpans = row.querySelectorAll(".color-picker");
+
+  colorSpans.forEach((span) => {
+    span.addEventListener("click", () => {
+      // Remove the selected-color class from all spans
+      colorSpans.forEach((s) => s.classList.remove("selected-color"));
+      // Add the selected-color class to the clicked span
+      span.classList.add("selected-color");
+
+      const color = span.style.backgroundColor;
+      label.style.backgroundColor = color;
+    });
+  });
+};
 
 const addRow = (position, referenceRow) => {
   const tierRow = document.createElement("div");
@@ -270,115 +384,39 @@ const addRow = (position, referenceRow) => {
 
   adjustContainerHeight();
 
-  const dialog = document.createElement("dialog");
-  const showButton = tierRow.querySelector("#settings-gear");
-  const label = tierRow.querySelector(".label");
+  // Call attachEventListeners() after adding a new row
+  attachEventListeners();
 
-  dialog.innerHTML = `
-    <div class="modal-container">
-      <span class="close-button">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="icon icon-tabler icon-tabler-x"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="#000000"
-          fill="none"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <path d="M18 6l-12 12" />
-          <path d="M6 6l12 12" />
-        </svg>
-      </span>
-      <h3>Choose a Label Background Color:</h3>
-      <div class="color-container">
-        <span style="background-color: #FF7F7F;" class="color-picker"></span>
-        <span style="background-color: #FFBF7F;" class="color-picker"></span>
-        <span style="background-color: #FFDF7F;" class="color-picker"></span>
-        <span style="background-color: #FFFF7F;" class="color-picker"></span>
-        <span style="background-color: #BFFF7F;" class="color-picker"></span>
-        <span style="background-color: #7FFF7F;" class="color-picker"></span>
-        <span style="background-color: #7FFFFF;" class="color-picker"></span>
-        <span style="background-color: #7FBFFF;" class="color-picker"></span>
-        <span style="background-color: #7F7FFF;" class="color-picker"></span>
-        <span style="background-color: #FF7FFF;" class="color-picker"></span>
-        <span style="background-color: #BF7FBF;" class="color-picker"></span>
-        <span style="background-color: #3B3B3B;" class="color-picker"></span>
-        <span style="background-color: #858585;" class="color-picker"></span>
-        <span style="background-color: #CFCFCF;" class="color-picker"></span>
-        <span style="background-color: #F7F7F7;" class="color-picker"></span>
-      </div>
-      <h4>Edit Label Text Below:</h4>
-      <textarea class="label-input">${label.textContent}</textarea>
-      <span class="button-container">
-        <button class="delete-button">Delete Row</button>
-        <button class="clear-button">Clear Row Images</button>
-      </span>
-      <span class="button-container">
-        <button id="add-button-above">Add a Row Above</button>
-        <button id="add-button-below">Add a Row Below</button>
-      </span>
-    </div>
-  `;
+  const Dialog = createDialog(tierRow);
 
-  // Add the dialog to the tier row
-  tierRow.appendChild(dialog);
-
-  const closeButton = dialog.querySelector(".close-button");
-
-  showButton.addEventListener("click", () => {
-    dialog.showModal();
-  });
-
-  closeButton.addEventListener("click", () => {
-    dialog.close();
-  });
-
-  // Add event listener to label & textarea when content changes
-  const textArea = dialog.querySelector(".label-input");
-
-  label.addEventListener("input", () => {
-    // Update the value of the textarea with the content of the label div
-    textArea.value = label.textContent;
-  });
-
-  textArea.addEventListener("input", () => {
-    // Update the content of the label div with the value of the textarea
-    label.textContent = textArea.value;
-  });
-
-  // Color picker for tier labels
-  const colorSpans = tierRow.querySelectorAll(".color-picker");
-
-  colorSpans.forEach((span) => {
-    span.addEventListener("click", () => {
-      // Remove the selected-color class from all spans
-      colorSpans.forEach((s) => s.classList.remove("selected-color"));
-      // Add the selected-color class to the clicked span
-      span.classList.add("selected-color");
-
-      const color = span.style.backgroundColor;
-      label.style.backgroundColor = color;
-    });
-  });
+  return Dialog;
 };
 
 // Function to save row data to localStorage
 const saveRows = () => {
-  const rows = document.querySelectorAll(".tier-row");
+  // const rows = document.querySelectorAll(".tier-row");
   const rowData = [];
   rows.forEach((row, index) => {
+    // Generate a unique ID for each row
+    const rowId = `row-${index}`;
+
+    // Get label text and background color
+    const label = row.querySelector(".label");
+    const labelColor = label.style.backgroundColor;
+    const labelText = label.textContent;
+
+    // Update the label color and text in the row's data object
+    const rowOldData = JSON.parse(window.localStorage.getItem(rowId)) || {};
+
     rowData.push({
+      id: rowId,
       html: row.outerHTML,
       position: index,
+      labelColor: labelColor || rowOldData.labelColor || "",
+      labelText: labelText || rowOldData.labelText || "",
     });
   });
 
-  console.log(rows, rowData);
   window.localStorage.setItem("rows", JSON.stringify(rowData));
 };
 
@@ -402,99 +440,7 @@ rows.forEach((row) => {
   row.ondrop = onDrop;
 
   //TODO: style the modal:check, include fields needed (deleting rows:check, creating rows, clearing all images:check, disable clear image button when row is empty:check, adding rows:check:;add rows above or below:check), update label text:check and color:check
-  const dialog = document.createElement("dialog");
-  const showButton = row.querySelector("#settings-gear");
-  const label = row.querySelector(".label");
+  const Dialog = createDialog(row);
 
-  dialog.innerHTML = `
-    <div class="modal-container">
-      <span class="close-button">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="icon icon-tabler icon-tabler-x"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="#000000"
-          fill="none"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <path d="M18 6l-12 12" />
-          <path d="M6 6l12 12" />
-        </svg>
-      </span>
-      <h3>Choose a Label Background Color:</h3>
-      <div class="color-container">
-        <span style="background-color: #FF7F7F;" class="color-picker"></span>
-        <span style="background-color: #FFBF7F;" class="color-picker"></span>
-        <span style="background-color: #FFDF7F;" class="color-picker"></span>
-        <span style="background-color: #FFFF7F;" class="color-picker"></span>
-        <span style="background-color: #BFFF7F;" class="color-picker"></span>
-        <span style="background-color: #7FFF7F;" class="color-picker"></span>
-        <span style="background-color: #7FFFFF;" class="color-picker"></span>
-        <span style="background-color: #7FBFFF;" class="color-picker"></span>
-        <span style="background-color: #7F7FFF;" class="color-picker"></span>
-        <span style="background-color: #FF7FFF;" class="color-picker"></span>
-        <span style="background-color: #BF7FBF;" class="color-picker"></span>
-        <span style="background-color: #3B3B3B;" class="color-picker"></span>
-        <span style="background-color: #858585;" class="color-picker"></span>
-        <span style="background-color: #CFCFCF;" class="color-picker"></span>
-        <span style="background-color: #F7F7F7;" class="color-picker"></span>
-      </div>
-      <h4>Edit Label Text Below:</h4>
-      <textarea class="label-input">${label.textContent}</textarea>
-      <span class="button-container">
-        <button class="delete-button">Delete Row</button>
-        <button class="clear-button">Clear Row Images</button>
-      </span>
-      <span class="button-container">
-        <button id="add-button-above">Add a Row Above</button>
-        <button id="add-button-below">Add a Row Below</button>
-      </span>
-    </div>
-  `;
-
-  // Add the dialog to the tier row
-  row.appendChild(dialog);
-
-  const closeButton = dialog.querySelector(".close-button");
-
-  showButton.addEventListener("click", () => {
-    dialog.showModal();
-  });
-
-  closeButton.addEventListener("click", () => {
-    dialog.close();
-  });
-
-  // Add event listener to label & textarea when content changes
-  const textArea = dialog.querySelector(".label-input");
-
-  label.addEventListener("input", () => {
-    // Update the value of the textarea with the content of the label div
-    textArea.value = label.textContent;
-  });
-
-  textArea.addEventListener("input", () => {
-    // Update the content of the label div with the value of the textarea
-    label.textContent = textArea.value;
-  });
-
-  // Color picker for tier labels
-  const colorSpans = row.querySelectorAll(".color-picker");
-
-  colorSpans.forEach((span) => {
-    span.addEventListener("click", () => {
-      // Remove the selected-color class from all spans
-      colorSpans.forEach((s) => s.classList.remove("selected-color"));
-      // Add the selected-color class to the clicked span
-      span.classList.add("selected-color");
-
-      const color = span.style.backgroundColor;
-      label.style.backgroundColor = color;
-    });
-  });
+  return Dialog;
 });
