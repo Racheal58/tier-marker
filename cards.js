@@ -36,33 +36,43 @@ const createCard = (id, cardData) => {
 };
 
 const appendImage = (card) => {
-  const input = document.createElement("input");
-  input.setAttribute("type", "file");
-  input.setAttribute("accept", "image/png,image/gif,image/jpeg,image/jpg");
-  input.style.visibility = "hidden";
-  input.onchange = () => {
-    const image = new Image(82, 82);
-    const firstImage = input.files[0];
-    const fileName = document.querySelector("#uploaded-image-filename");
-    fileName.innerHTML = firstImage.name;
-    console.log(firstImage, firstImage.name);
+  try {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/png,image/gif,image/jpeg,image/jpg");
+    input.style.visibility = "hidden";
+    input.onchange = () => {
+      const image = new Image(82, 82);
+      const firstImage = input.files[0];
+      const fileName = document.querySelector("#uploaded-image-filename");
+      fileName.innerHTML = firstImage.name;
+      console.log(firstImage, firstImage.name);
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      image.src = e.target.result;
-      image.style.pointerEvents = "none";
-      card.appendChild(image);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        image.src = e.target.result;
+        image.style.pointerEvents = "none";
+        card.appendChild(image);
 
-      // Save Data to Local Storage
-      const cardData = {
-        imageSrc: image.src,
-        row: card.parentNode.querySelector(".label")?.innerText,
+        // Save Data to Local Storage
+        const cardData = {
+          imageSrc: image.src,
+          row: card.parentNode.querySelector(".label")?.innerText,
+        };
+        window.localStorage.setItem(
+          "card_" + card.id,
+          JSON.stringify(cardData)
+        );
       };
-      window.localStorage.setItem(card.id, JSON.stringify(cardData));
+      reader.readAsDataURL(firstImage);
     };
-    reader.readAsDataURL(firstImage);
-  };
-  input.click();
+    input.click();
+  } catch (error) {
+    console.error("Failed to save rows to localStorage:", error);
+    alert(
+      "Failed to save image. Please clear localStorage or try using a different browser."
+    );
+  }
 };
 
 //TODO: check the issue with deleting cards

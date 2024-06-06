@@ -8,19 +8,29 @@ const onDragOver = (e) => {
 };
 
 const onDrop = (e) => {
-  e.preventDefault();
-  const draggedCardId = e.dataTransfer.getData("id");
-  const draggedCard = document.getElementById(draggedCardId);
+  try {
+    e.preventDefault();
+    const draggedCardId = e.dataTransfer.getData("id");
+    const draggedCard = document.getElementById(draggedCardId);
 
-  const cardData = {
-    imageSrc: draggedCard.querySelector("img").src,
-    row: e.target.previousElementSibling.innerText,
-  };
+    const cardData = {
+      imageSrc: draggedCard.querySelector("img").src,
+      row: e.target.previousElementSibling.innerText,
+    };
 
-  window.localStorage.setItem(draggedCard.id, JSON.stringify(cardData));
+    window.localStorage.setItem(
+      "card_" + draggedCard.id,
+      JSON.stringify(cardData)
+    );
 
-  e.target.appendChild(draggedCard);
-  console.log(`dragged, ${e.dataTransfer.getData("id")}`);
+    e.target.appendChild(draggedCard);
+    console.log(`dragged, ${e.dataTransfer.getData("id")}`);
+  } catch (error) {
+    console.error("Failed to save rows to localStorage:", error);
+    alert(
+      "Failed to save Image. Please clear localStorage or try using a different browser."
+    );
+  }
 };
 
 // Attach event listener for drop event on the parent container
@@ -394,30 +404,38 @@ const addRow = (position, referenceRow) => {
 
 // Function to save row data to localStorage
 const saveRows = () => {
-  // const rows = document.querySelectorAll(".tier-row");
-  const rowData = [];
-  rows.forEach((row, index) => {
-    // Generate a unique ID for each row
-    const rowId = `row-${index}`;
+  try {
+    // Redefined this so it will add all(from HTML file & dynamically created) the rows to localstorage
+    const rows = document.querySelectorAll(".tier-row");
+    const rowData = [];
+    rows.forEach((row, index) => {
+      // Generate a unique ID for each row
+      const rowId = `row-${index}`;
 
-    // Get label text and background color
-    const label = row.querySelector(".label");
-    const labelColor = label.style.backgroundColor;
-    const labelText = label.textContent;
+      // Get label text and background color
+      const label = row.querySelector(".label");
+      const labelColor = label.style.backgroundColor;
+      const labelText = label.textContent;
 
-    // Update the label color and text in the row's data object
-    const rowOldData = JSON.parse(window.localStorage.getItem(rowId)) || {};
+      // Update the label color and text in the row's data object
+      const rowOldData = JSON.parse(window.localStorage.getItem(rowId)) || {};
 
-    rowData.push({
-      id: rowId,
-      html: row.outerHTML,
-      position: index,
-      labelColor: labelColor || rowOldData.labelColor || "",
-      labelText: labelText || rowOldData.labelText || "",
+      rowData.push({
+        id: rowId,
+        html: row.outerHTML,
+        position: index,
+        labelColor: labelColor || rowOldData.labelColor || "",
+        labelText: labelText || rowOldData.labelText || "",
+      });
     });
-  });
 
-  window.localStorage.setItem("rows", JSON.stringify(rowData));
+    window.localStorage.setItem("rows", JSON.stringify(rowData));
+  } catch (error) {
+    console.error("Failed to save rows to localStorage:", error);
+    alert(
+      "Failed to save rows. Please clear localStorage or try using a different browser."
+    );
+  }
 };
 
 document.addEventListener("click", (e) => {
