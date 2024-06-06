@@ -98,23 +98,27 @@ const loadRows = () => {
 const loadCards = () => {
   const cardBank = document.querySelector(".files-bank");
   const keys = Object.keys(window.localStorage);
+  const cardKeys = keys.filter((key) => key.startsWith("card_"));
 
-  keys.forEach((key) => {
-    const cardData = JSON.parse(window.localStorage.getItem(key));
-    const loadedCard = createCard(key, cardData);
-    const rows = document.querySelectorAll(".tier-row");
-    const correctRow = Array.from(rows).find((row) => {
-      return row.querySelector(".label").innerText === cardData.row;
+  if (cardKeys.length > 0) {
+    cardKeys.forEach((key) => {
+      const cardId = key.replace("card_", ""); // Remove the "card_" prefix
+      const cardData = JSON.parse(window.localStorage.getItem(key));
+      const loadedCard = createCard(cardId, cardData);
+      const rows = document.querySelectorAll(".tier-row");
+      const correctRow = Array.from(rows).find((row) => {
+        return row.querySelector(".label").innerText === cardData.row;
+      });
+
+      if (correctRow) {
+        correctRow.appendChild(loadedCard);
+        attachCardEventListeners(loadedCard); // Attach event listeners to the loaded card
+      } else {
+        cardBank.appendChild(loadedCard);
+        attachCardEventListeners(loadedCard); // Attach event listeners to the loaded card
+      }
     });
-
-    if (correctRow) {
-      correctRow.appendChild(loadedCard);
-      attachCardEventListeners(loadedCard); // Attach event listeners to the loaded card
-    } else {
-      cardBank.appendChild(loadedCard);
-      attachCardEventListeners(loadedCard); // Attach event listeners to the loaded card
-    }
-  });
+  }
 
   // display file bank when adding image
   cardBank.classList.add("show");
