@@ -1,6 +1,8 @@
 # Tier Marker
 TierMarker built with HTML, CSS &amp; vanilla JS.
 
+[Make Tier List](https://fascinating-cupcake-b02837.netlify.app/)
+
 ![Tier Marker](tier-maker.png)
 
 # Contents
