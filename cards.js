@@ -3,8 +3,6 @@ const uploadFile = document.querySelector("#choose-files");
 
 // Upload file from computer logic
 const uploadFileToBank = (e) => {
-  console.log("try upload");
-
   const card = createCard();
   const filesBank = document.querySelector(".files-bank");
   filesBank.appendChild(card);
@@ -15,7 +13,6 @@ const uploadFileToBank = (e) => {
 uploadFile.onclick = uploadFileToBank;
 
 const createCard = (id, cardData) => {
-  console.log("try create");
   const card = document.createElement("div");
   card.classList.add("card");
   card.setAttribute("draggable", "true");
@@ -46,7 +43,6 @@ const appendImage = (card) => {
       const firstImage = input.files[0];
       const fileName = document.querySelector("#uploaded-image-filename");
       fileName.innerHTML = firstImage.name;
-      console.log(firstImage, firstImage.name);
 
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -75,9 +71,8 @@ const appendImage = (card) => {
   }
 };
 
-//TODO: check the issue with deleting cards
+//TODO: check the issue with deleting cards;check
 const deleteCard = (e) => {
-  console.log("delete");
   const onDeleteCard = window.confirm("Do you want to delete this file?");
   if (onDeleteCard) {
     e.target.remove();
@@ -86,7 +81,6 @@ const deleteCard = (e) => {
 };
 
 const onDragStart = (e) => {
-  console.log("dragging element");
   e.dataTransfer.setData("id", e.target.id);
 
   setTimeout(() => {

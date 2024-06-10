@@ -24,7 +24,6 @@ const onDrop = (e) => {
     );
 
     e.target.appendChild(draggedCard);
-    console.log(`dragged, ${e.dataTransfer.getData("id")}`);
   } catch (error) {
     console.error("Failed to save rows to localStorage:", error);
     alert(
@@ -92,9 +91,9 @@ const getDragAfterRow = (container, y) => {
 //   return row;
 // }
 
-//TODO: change to arrow functions
+//TODO: change to arrow functions;check
 // Move rows (tier-row) up or down with the arrows
-function moveRowUp(row) {
+const moveRowUp = (row) => {
   const prevRow = row.previousElementSibling;
   if (!prevRow) return; // If there's no previous item, exit
 
@@ -102,7 +101,7 @@ function moveRowUp(row) {
   saveRows(); // Save updated rows to local storage
 }
 
-function moveRowDown(row) {
+const moveRowDown = (row) => {
   const nextRow = row.nextElementSibling;
   if (!nextRow) return; // If there's no next item, exit
 
@@ -240,7 +239,7 @@ const createDialog = (row) => {
         <span style="background-color: #F7F7F7;" class="color-picker"></span>
       </div>
       <h4>Edit Label Text Below:</h4>
-      <textarea class="label-input">${label.textContent}</textarea>
+      <textarea class="label-input">${label.innerText}</textarea>
       <span class="button-container">
         <button class="delete-button">Delete Row</button>
         <button class="clear-button">Clear Row Images</button>
